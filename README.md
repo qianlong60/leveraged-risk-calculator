@@ -8,4 +8,6 @@
 
 无需构建命令，可直接由 Vercel 以静态站点部署。
 
+生产网站：https://leveraged-risk-calculator.vercel.app
+
 > 仅作数学风险演示，不构成投资建议。
