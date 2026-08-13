@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>两倍空抄底回本计算器</title>
+<style>
+:root{--navy:#13244a;--blue:#2463eb;--red:#dc2626;--green:#078a55;--orange:#ea7500;--line:#dce4ef;--muted:#61708a;--bg:#f3f7fc}
+*{box-sizing:border-box} html,body{max-width:100%;overflow-x:hidden} body{margin:0;background:var(--bg);color:var(--navy);font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif}
+.page{width:100%;max-width:1120px;margin:auto;padding:28px 22px 50px}.page>*{max-width:100%}.hero{text-align:center;margin-bottom:23px}.hero h1{font-size:36px;margin:5px 0 8px;overflow-wrap:anywhere}.hero p{font-size:18px;color:var(--muted);margin:0;overflow-wrap:anywhere}.nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:0 0 18px}.nav a{padding:9px 14px;border:1px solid #bdcbe0;border-radius:999px;background:#fff;color:var(--navy);text-decoration:none;font-weight:800}.nav a.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.card{min-width:0;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 8px 30px rgba(25,50,90,.07)}
+.inputs{display:grid;grid-template-columns:1fr 70px 1fr;gap:18px;align-items:center;padding:25px}.arrow{text-align:center;font-size:42px;color:#8a99af}
+.inputbox{min-width:0}.inputbox label{display:block;font-size:20px;font-weight:700;margin-bottom:8px}.inputbox .hint{font-size:15px;color:var(--muted);margin-bottom:14px;min-height:23px}
+.numrow{display:flex;min-width:0;align-items:center;border:2px solid #c8d5e7;border-radius:13px;overflow:hidden;background:#fff}.numrow input{width:100%;min-width:0;border:0;outline:0;padding:12px 10px 12px 16px;font-size:32px;font-weight:700;color:var(--blue)}.numrow span{font-size:18px;font-weight:700;padding-right:15px;white-space:nowrap}
+input[type=range]{width:100%;accent-color:var(--blue);margin-top:14px}.invalid{display:none;margin-top:15px;padding:13px;border-radius:10px;background:#fff0f0;color:#b91c1c;font-weight:700;text-align:center}
+.story{margin-top:18px;padding:26px}.story h2,.explain h2{font-size:24px;margin:0 0 20px;text-align:center}.steps{display:grid;grid-template-columns:1fr 50px 1fr 50px 1fr;align-items:center;gap:9px}.step{border:2px solid var(--line);border-radius:15px;padding:16px;text-align:center;min-height:132px}.step .top{font-size:16px;color:var(--muted)}.step .price{font-size:36px;font-weight:800;margin:9px 0}.step .bottom{font-size:16px}.step.buy{border-color:#7aa1f7;background:#f3f7ff}.step.now{border-color:#f39a9a;background:#fff6f6}.sarrow{text-align:center;font-size:32px;color:#9aa6b8}.delta{font-size:15px;font-weight:700;color:var(--red)}
+.base-control{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:-7px 0 22px;padding:12px;background:#f7f9fc;border-radius:11px;color:var(--muted)}.base-control input{width:105px;padding:7px 10px;border:1.5px solid #bfcce0;border-radius:9px;font-size:20px;font-weight:700;color:var(--blue)}.base-control button{border:1px solid #bdc9da;background:#fff;border-radius:8px;padding:7px 11px;cursor:pointer;font-weight:700;color:var(--navy)}.scale-proof{margin-top:17px;padding:13px 16px;border-radius:10px;background:#eefbf5;color:#12633f;text-align:center;font-size:16px;line-height:1.65}
+.results{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.result{padding:24px;text-align:center}.result .label{font-size:19px;font-weight:700}.result .big{font-size:50px;font-weight:850;margin:7px 0}.result.loss .big{color:var(--red)}.result.recover{border:4px solid #15a36d;background:#f0fcf7}.result.recover .big{color:var(--green)}.result .formula{font-size:16px;color:var(--muted)}.underlying-back{margin-top:12px;padding-top:11px;border-top:1px solid #acdcca;color:#12603f;font-size:15px;font-weight:700;line-height:1.55}.product-helper{display:inline-block;margin-top:8px;padding:7px 12px;border-radius:8px;background:#fff4df;color:#975200;font-weight:700}
+.money{margin-top:18px;padding:25px}.money-title{text-align:center;font-size:22px;font-weight:700;margin-bottom:20px}.bars{display:grid;grid-template-columns:1fr 70px 1fr 70px 1fr;align-items:end;gap:10px;height:195px}.barwrap{text-align:center}.bararea{height:142px;display:flex;align-items:flex-end;justify-content:center}.bar{width:105px;border-radius:9px 9px 0 0;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;min-height:34px;transition:.2s}.bar.buy{background:var(--blue)}.bar.now{background:var(--red)}.bar.back{background:var(--green)}.barlabel{margin-top:8px;font-size:17px;font-weight:700}.bararrow{align-self:center;text-align:center;font-size:15px;font-weight:800;color:var(--muted)}.bararrow b{display:block;font-size:28px;color:var(--green)}
+.explain{margin-top:18px;padding:26px}.sentence{font-size:21px;line-height:1.9;background:#edf5ff;border-left:6px solid var(--blue);padding:14px 18px;border-radius:8px}.sentence b{color:var(--red)}
+.curve{min-width:0;overflow:hidden;margin-top:20px;border-top:1px solid var(--line);padding-top:20px}.curve-title{text-align:center;font-size:20px;font-weight:700;margin-bottom:7px}.curve-sub{text-align:center;color:var(--muted);font-size:15px;margin-bottom:8px}canvas{display:block;width:100%;max-width:100%;height:auto}
+.wear{margin-top:18px;padding:25px}.wear h2{text-align:center;margin:0 0 20px}.warning{background:#fff0f0;border:2px solid #ef4444;border-radius:13px;padding:16px;text-align:center;color:#a71717;font-size:23px;font-weight:900;line-height:1.55}.wear-intro{font-size:17px;line-height:1.75;margin:18px 0}.thresholds{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.zone{border-radius:12px;padding:15px;border:1px solid var(--line);min-height:150px}.zone h3{font-size:20px;margin:0 0 8px}.zone p{font-size:15px;line-height:1.55;margin:0}.z1{background:#f0fbf5}.z2{background:#fffbea}.z3{background:#fff5e8;border-color:#f2b25b}.z4{background:#fff0f0;border-color:#f18e8e}.wear-table{width:100%;table-layout:fixed;border-collapse:collapse;margin-top:20px;text-align:center}.wear-table th,.wear-table td{padding:12px 8px;border-bottom:1px solid var(--line);overflow-wrap:anywhere}.wear-table th{background:#f4f7fb}.hot{color:var(--red);font-weight:800}.wear-calc{margin-top:20px;padding:18px;background:#f7f9fc;border-radius:12px}.wear-calc-row{display:grid;grid-template-columns:1fr 1fr;gap:15px}.mini{min-width:0}.mini label{display:block;font-weight:800;margin-bottom:7px}.mini input{width:100%;min-width:0;padding:10px;border:1.5px solid #c5d1e2;border-radius:9px;font-size:22px;font-weight:800;color:var(--blue)}.wear-result{text-align:center;margin-top:15px;font-size:18px;line-height:1.65}.wear-result b{font-size:28px;color:var(--red)}.note{margin-top:18px;background:#fff7df;border:1px solid #eab308;border-radius:12px;padding:15px 18px;line-height:1.65;color:#555f70;font-size:15px;overflow-wrap:anywhere}.note b{color:#984b00}.note a{color:#1d5fc1}
+@media(max-width:760px){.page{width:100%;padding:16px 12px 35px}.hero h1{font-size:28px;line-height:1.3}.inputs{grid-template-columns:minmax(0,1fr)}.arrow{transform:rotate(90deg);font-size:30px}.steps{grid-template-columns:minmax(0,1fr)}.sarrow{transform:rotate(90deg)}.results{grid-template-columns:minmax(0,1fr)}.bars{grid-template-columns:minmax(0,1fr) 30px minmax(0,1fr) 30px minmax(0,1fr);gap:3px}.barwrap{min-width:0}.bar{width:62px}.bararrow{font-size:11px}.barlabel{font-size:13px}.result .big{font-size:43px}.sentence{font-size:18px}.money,.explain,.wear{padding:20px 12px}.money-title{font-size:20px}.base-control{font-size:14px}.thresholds{grid-template-columns:1fr 1fr}.wear-calc-row{grid-template-columns:1fr}.wear-table{font-size:13px}.wear-table th,.wear-table td{padding:9px 4px}}@media(max-width:440px){.thresholds{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="page">
+  <nav class="nav"><a href="index.html">首页</a><a href="leveraged_long_calculator.html">两倍做多</a><a class="active" href="inverse_etf_calculator.html">两倍做空</a></nav>
+  <header class="hero">
+    <h1>两倍空抄底：正股要跌多少才能回本？</h1>
+    <p>只输入正股的两个变化数字，主答案也是正股需要下跌多少。</p>
+  </header>
+
+  <section class="card inputs">
+    <div class="inputbox">
+      <label for="a">① 买入时，正股已经涨了多少点？</label>
+      <div class="hint">例：昨收100，涨到130时买入 → 填30</div>
+      <div class="numrow"><input id="a" type="number" min="0" max="49" step="0.5" value="30"><span>点</span></div>
+      <input id="ar" type="range" min="0" max="45" step="0.5" value="30">
+    </div>
+    <div class="arrow">→</div>
+    <div class="inputbox">
+      <label for="b">② 买入后，正股又涨了多少点？</label>
+      <div class="hint">例：从130涨到135 → 相对昨收又增加5点，填5</div>
+      <div class="numrow"><input id="b" type="number" min="0" max="49" step="0.5" value="5"><span>点</span></div>
+      <input id="br" type="range" min="0" max="20" step="0.5" value="5">
+    </div>
+  <div id="invalid" class="invalid" style="grid-column:1/-1">A+B 必须小于50点，否则这个简化模型中的两倍空价格已经到0。第二项已自动调整到可计算范围。</div>
+  </section>
+
+  <section class="card story">
+    <h2>钱是怎样变化的？</h2>
+    <div class="base-control"><b>两倍空产品昨收价（只影响金额显示）：</b><input id="basePrice" type="number" min="0.01" step="0.01" value="10"><span>元</span><button type="button" data-base="5">用5元</button><button type="button" data-base="10">用10元</button><button type="button" data-base="20">用20元</button></div>
+    <div class="steps">
+      <div class="step"><div class="top">正股昨收</div><div class="price">100</div><div class="bottom">两倍空昨收 <b><span id="baseShown">10.00</span>元</b></div></div>
+      <div class="sarrow">→</div>
+      <div class="step buy"><div class="top">正股涨到 <b id="stockBuy">130</b> 时买入</div><div class="price"><span id="buyPrice">4.00</span>元</div><div class="bottom">这是你的真实买入成本</div></div>
+      <div class="sarrow">→</div>
+      <div class="step now"><div class="top">正股随后涨到 <b id="stockNow">135</b></div><div class="price"><span id="nowPrice">3.00</span>元</div><div class="bottom delta">两倍空又下跌 <span id="dropMoney">1.00</span>元</div></div>
+    </div>
+    <div class="scale-proof" id="scaleProof">价格只是同比缩放：昨收5元时为2→1.5；昨收10元时为4→3；昨收20元时为8→6。三种情况都亏25%，回本都需产品上涨33.3%。</div>
+  </section>
+
+  <section class="results">
+    <div class="card result loss"><div class="label">你的实际亏损</div><div class="big" id="lossPct">25%</div><div class="formula" id="lossFormula">(4−3) ÷ 4 = 25%</div></div>
+    <div class="card result recover"><div class="label">收盘重置后，正股下一交易日需要下跌</div><div class="big" id="stockFallPct">16.67%</div><div class="formula" id="stockFallFormula">两倍空需涨33.3% ÷ 2 = 正股需跌16.67%</div><div class="product-helper">辅助信息：两倍空产品本身需上涨 <span id="recoverPct">33.3%</span></div><div class="underlying-back" id="underlyingBack">如果仍在同一天尚未重置，正股只需从135原路回到130，即下跌3.70%。</div><span id="recoverFormula" hidden></span></div>
+  </section>
+
+  <section class="card money">
+    <div class="money-title" id="moneyTitle">为什么亏25%，却要涨33.3%才能回本？</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bararea"><div class="bar buy" id="buyBar">4.00</div></div><div class="barlabel">买入价</div></div>
+      <div class="bararrow"><span id="lossArrow">亏25%</span><b>→</b></div>
+      <div class="barwrap"><div class="bararea"><div class="bar now" id="nowBar">3.00</div></div><div class="barlabel">现在价格</div></div>
+      <div class="bararrow"><span id="gainArrow">涨33.3%</span><b>→</b></div>
+      <div class="barwrap"><div class="bararea"><div class="bar back" id="backBar">4.00</div></div><div class="barlabel">回到买入价</div></div>
+    </div>
+  </section>
+
+  <section class="card explain">
+    <h2>一句话看懂</h2>
+    <div class="sentence" id="sentence"></div>
+    <div class="curve">
+      <div class="curve-title">正股买入后继续涨多少 → 收盘重置后，正股要跌多少，两倍空才能回本</div>
+      <div class="curve-sub" id="curveSub"></div>
+      <canvas id="curve" width="1000" height="390"></canvas>
+    </div>
+  </section>
+
+  <section class="card wear"><h2>波动磨损：两倍做空通常更敏感</h2><div class="warning">正股大涨大跌、反复震荡时，千万不要把每日−2倍反向产品当普通股票抄底或长期持有。</div><p class="wear-intro">以下是正股两天来回并最终回到原点的数学示例。正股最终不亏，但每日重置的−2倍反向产品仍会亏损，而且同级波动下通常比+2倍做多磨损更重。这是实用分级，不是监管规定的硬门槛。</p><div class="thresholds"><div class="zone z1"><h3>低于3%</h3><p>单次来回约磨损0.5%左右；已经比两倍做多更敏感。</p></div><div class="zone z2"><h3>3%–5%</h3><p>5%级来回一次约磨损1.43%–1.58%，开始明显。</p></div><div class="zone z3"><h3>5%–10%</h3><p>10%级来回一次约磨损5.45%–6.67%，风险很高。</p></div><div class="zone z4"><h3>超过10%</h3><p>15%级约11.74%–15.88%；20%级一次可磨损20%–30%。</p></div></div><table class="wear-table"><thead><tr><th>正股两日来回幅度</th><th>−2倍做空磨损范围</th><th>判断</th></tr></thead><tbody><tr><td>±3%</td><td>约0.52%–0.56%</td><td>开始累积</td></tr><tr><td>±5%</td><td class="hot">约1.43%–1.58%</td><td class="hot">明显</td></tr><tr><td>±10%</td><td class="hot">约5.45%–6.67%</td><td class="hot">严重</td></tr><tr><td>±15%</td><td class="hot">约11.74%–15.88%</td><td class="hot">非常严重</td></tr><tr><td>±20%</td><td class="hot">约20%–30%</td><td class="hot">极端</td></tr></tbody></table><div class="wear-calc"><div class="wear-calc-row"><div class="mini"><label>正股每次来回幅度（%）</label><input id="v" type="number" min="0.1" max="40" step="0.5" value="10"></div><div class="mini"><label>重复多少次完整来回？</label><input id="cycles" type="number" min="1" max="100" step="1" value="5"></div></div><div class="wear-result" id="wearResult"></div></div></section>
+
+  <div class="note"><b>重要口径：</b>本计算器把“点”定义为相对正股昨收的百分点。多数杠杆及反向产品只追求单日倍数并每日重置，跨多日会受路径复利、费用、跟踪误差和折溢价影响。风险依据：<a href="https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-alerts/sec">SEC投资者公告</a>、<a href="https://www.finra.org/investors/insights/lowdown-leveraged-and-inverse-exchange-traded-products">FINRA说明</a>。本页不构成投资建议。</div>
+</main>
+<script>
+const $=id=>document.getElementById(id), a=$('a'),b=$('b'),ar=$('ar'),br=$('br'),base=$('basePrice');
+const params=new URLSearchParams(location.search);
+if(params.has('a')){a.value=params.get('a');ar.value=params.get('a')}
+if(params.has('b')){b.value=params.get('b');br.value=params.get('b')}
+if(params.has('p'))base.value=params.get('p');
+function n(v,d=1){return Number(v).toFixed(d).replace(/\.0$/,'')}
+function update(from){
+  if(from==='a') ar.value=a.value;if(from==='ar') a.value=ar.value;if(from==='b') br.value=b.value;if(from==='br') b.value=br.value;
+  let A=Math.max(0,+a.value||0),B=Math.max(0,+b.value||0),ok=A+B<50;
+  $('invalid').style.display=ok?'none':'block';
+  if(!ok){B=Math.max(0,49.5-A);b.value=B;br.value=B}
+  const P=Math.max(.01,+base.value||10);
+  const buy=P*(1-2*A/100), now=P*(1-2*(A+B)/100), drop=buy-now;
+  const loss=drop/buy*100, recover=drop/now*100;
+  const resetFall=recover/2;
+  $('stockBuy').textContent=n(100+A);$('stockNow').textContent=n(100+A+B);
+  $('buyPrice').textContent=buy.toFixed(2);$('nowPrice').textContent=now.toFixed(2);$('dropMoney').textContent=drop.toFixed(2);
+  $('baseShown').textContent=P.toFixed(2);
+  $('lossPct').textContent=n(loss)+'%';$('recoverPct').textContent=n(recover)+'%';
+  $('stockFallPct').textContent=resetFall.toFixed(2)+'%';
+  $('stockFallFormula').textContent=`两倍空需涨 ${n(recover)}% ÷ 2 = 正股需跌 ${resetFall.toFixed(2)}%`;
+  $('lossFormula').textContent=`(${buy.toFixed(2)}−${now.toFixed(2)}) ÷ ${buy.toFixed(2)} = ${n(loss)}%`;
+  $('recoverFormula').textContent=`(${buy.toFixed(2)}−${now.toFixed(2)}) ÷ ${now.toFixed(2)} = ${n(recover)}%`;
+  const stockNowValue=100+A+B,sameDayFall=B/stockNowValue*100;
+  $('underlyingBack').textContent=`收盘重置后：正股下一交易日约需下跌 ${resetFall.toFixed(2)}%。若当日尚未重置并原路返回：正股从 ${n(stockNowValue)} 回到 ${n(100+A)}，下跌 ${sameDayFall.toFixed(2)}%。`;
+  const scalePrice=q=>[q*(1-2*A/100),q*(1-2*(A+B)/100)];
+  const s5=scalePrice(5),s10=scalePrice(10),s20=scalePrice(20);
+  $('scaleProof').textContent=`价格只是同比缩放：昨收5元时 ${s5[0].toFixed(2)}→${s5[1].toFixed(2)}；昨收10元时 ${s10[0].toFixed(2)}→${s10[1].toFixed(2)}；昨收20元时 ${s20[0].toFixed(2)}→${s20[1].toFixed(2)}。三种情况都亏${n(loss)}%，产品回本都需涨${n(recover)}%。`;
+  $('lossArrow').textContent='亏'+n(loss)+'%';$('gainArrow').textContent='涨'+n(recover)+'%';
+  $('moneyTitle').textContent=`为什么亏${n(loss)}%，却要涨${n(recover)}%才能回本？`;
+  $('buyBar').textContent=buy.toFixed(2);$('nowBar').textContent=now.toFixed(2);$('backBar').textContent=buy.toFixed(2);
+  const maxH=135, ratio=now/buy;$('buyBar').style.height=maxH+'px';$('backBar').style.height=maxH+'px';$('nowBar').style.height=Math.max(34,maxH*ratio)+'px';
+  $('sentence').innerHTML=`正股涨了 <b>${n(A)}点</b> 时你买入，随后又涨 <b>${n(B)}点</b>，你的两倍空实际亏 <b>${n(loss)}%</b>。产品要涨 <b>${n(recover)}%</b> 才回本；如果已经收盘并重新按−2倍计算，正股下一交易日约需下跌 <b>${resetFall.toFixed(2)}%</b>。`;
+  $('curveSub').textContent=`当前买入时机：正股已经涨 ${n(A)} 点。红线纵轴已经改为“正股下一交易日所需下跌百分比”。`;
+  draw(A,B,resetFall);
+}
+function draw(A,currentB,currentFall){
+  const c=$('curve'),g=c.getContext('2d'),W=c.width,H=c.height,L=80,R=30,T=25,D=65,pw=W-L-R,ph=H-T-D;
+  g.clearRect(0,0,W,H);g.fillStyle='#fff';g.fillRect(0,0,W,H);
+  const maxB=Math.min(20,Math.max(5,50-A-0.5));
+  const maxVal=Math.min(250,Math.max(25,Math.ceil((100*maxB/(100-2*A-2*maxB))/25)*25));
+  const X=x=>L+x/maxB*pw,Y=y=>T+ph-Math.min(y,maxVal)/maxVal*ph;
+  g.font='16px Microsoft YaHei';g.textAlign='right';g.textBaseline='middle';
+  for(let i=0;i<=5;i++){const v=maxVal*i/5,y=Y(v);g.strokeStyle='#dce4ef';g.lineWidth=1;g.beginPath();g.moveTo(L,y);g.lineTo(W-R,y);g.stroke();g.fillStyle='#53617a';g.fillText(n(v,0)+'%',L-10,y)}
+  g.textAlign='center';for(let i=0;i<=5;i++){const v=maxB*i/5,x=X(v);g.strokeStyle='#eef2f7';g.beginPath();g.moveTo(x,T);g.lineTo(x,T+ph);g.stroke();g.fillStyle='#53617a';g.fillText(n(v),x,T+ph+25)}
+  g.strokeStyle='#172554';g.lineWidth=3;g.beginPath();g.moveTo(L,T);g.lineTo(L,T+ph);g.lineTo(W-R,T+ph);g.stroke();
+  g.strokeStyle='#dc2626';g.lineWidth=5;g.beginPath();let start=true;
+  for(let x=0;x<=maxB;x+=maxB/250){const den=100-2*A-2*x;if(den<=0)break;const y=100*x/den;if(y>maxVal*1.05)break;if(start){g.moveTo(X(x),Y(y));start=false}else g.lineTo(X(x),Y(y))}g.stroke();
+  if(currentB<=maxB&&currentFall<=maxVal){const x=X(currentB),y=Y(currentFall);g.setLineDash([6,6]);g.strokeStyle='#ea7500';g.lineWidth=2;g.beginPath();g.moveTo(x,T+ph);g.lineTo(x,y);g.lineTo(L,y);g.stroke();g.setLineDash([]);g.fillStyle='#ea7500';g.beginPath();g.arc(x,y,8,0,Math.PI*2);g.fill();g.font='bold 17px Microsoft YaHei';g.textAlign='left';g.fillText(`  当前：再涨${n(currentB)}点 → 次日正股需跌${currentFall.toFixed(2)}%`,x+7,Math.max(T+14,y-15))}
+  g.fillStyle='#172554';g.font='bold 18px Microsoft YaHei';g.textAlign='center';g.fillText('买入后正股又上涨 B（昨收百分点）',L+pw/2,H-18);
+  g.save();g.translate(20,T+ph/2);g.rotate(-Math.PI/2);g.fillText('正股下一交易日需下跌（%）',0,0);g.restore();
+}
+function wear(){const v=Math.max(.001,Math.min(.4,(+$('v').value||10)/100)),cycles=Math.max(1,Math.min(100,+$('cycles').value||1));const r1=(1-2*v)*(1+2*v/(1+v)),r2=(1+2*v)*(1-2*v/(1-v)),l1=1-r1,l2=1-r2,lo=Math.min(l1,l2),hi=Math.max(l1,l2),cumLo=1-Math.pow(1-lo,cycles),cumHi=1-Math.pow(1-hi,cycles);$('wearResult').innerHTML=`正股每次最终回到原点，−2倍做空单次约磨损 <b>${(lo*100).toFixed(2)}%–${(hi*100).toFixed(2)}%</b>；重复${cycles}次后，复合磨损约 <b>${(cumLo*100).toFixed(1)}%–${(cumHi*100).toFixed(1)}%</b>。`}
+[a,b,base].forEach(el=>el.addEventListener('input',()=>update(el.id)));ar.addEventListener('input',()=>update('ar'));br.addEventListener('input',()=>update('br'));document.querySelectorAll('[data-base]').forEach(btn=>btn.addEventListener('click',()=>{base.value=btn.dataset.base;update('base')}));$('v').addEventListener('input',wear);$('cycles').addEventListener('input',wear);update();wear();
+</script>
+</body>
+</html>
