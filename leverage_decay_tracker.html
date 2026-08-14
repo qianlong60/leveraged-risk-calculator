@@ -52,6 +52,38 @@ body{background:#f6f8fb;color:var(--ink)}
 @media(max-width:760px){.fields{grid-template-columns:1fr 1fr}.field.wide{grid-column:auto}.summary{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.page{padding:12px 11px 36px}.nav{margin-bottom:22px}.hero h1{font-size:27px}.hero p{font-size:14px}.setup,.headline,.breakdown{padding:16px}.fields{grid-template-columns:1fr 1fr}.field:first-child,.field:nth-child(4){grid-column:1/-1}.actions{align-items:stretch}.primary{width:100%}.secondary{flex:0 0 auto}.status{flex:1}.summary{grid-template-columns:1fr}.metric .value{font-size:34px}.headline-top{align-items:flex-start}.live{text-align:left}}
 </style>
+<style>
+.field input[readonly]{background:#eef2f7;border-color:#d8dee9;color:#39475e;cursor:default}
+.field input[readonly]:focus{outline:2px solid #b8cdf1;outline-offset:1px}
+.headline{background:linear-gradient(135deg,#142546 0%,#1c3c70 100%);border:0;box-shadow:0 14px 34px rgba(20,40,80,.18)}
+.headline-top{border-bottom-color:rgba(255,255,255,.17)}
+.instrument h2,.live b{color:#fff}
+.instrument p,.live span{color:#cbd8ed}
+.summary .metric{color:var(--ink);background:#fff!important;border:1px solid rgba(255,255,255,.7)}
+.summary .metric:nth-child(3),.summary .metric:nth-child(4){border-left:5px solid #ef7b73}
+.summary .metric:nth-child(4){border-left-color:#f0b64d}
+.summary .metric:nth-child(3):has(.positive){border-left-color:#34b780}
+.chart-card[hidden]{display:none!important}.chart-card:not([hidden]){display:block!important;margin-top:14px;padding:22px;overflow:hidden}
+.guidance[hidden]{display:none!important}
+.chart-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.chart-head p{margin:3px 0 0;color:var(--muted);font-size:14px;line-height:1.55}
+.chart-card h2{font-size:21px;margin:0}
+.legend{margin:15px 0 8px;color:#536078}
+.legend .actual{font-weight:800;color:#1a59bf}
+.legend .daily,.legend .simple{font-size:13px}
+.chart-wrap{min-height:340px;background:linear-gradient(180deg,#f7faff 0%,#fff 100%);border:1px solid #e0e7f1;border-radius:12px;padding:8px}
+.table-wrap{margin-top:12px;border:1px solid var(--border);border-radius:10px}
+.table th{background:#f5f7fb;color:#536078;font-size:13px}
+.guidance{margin-top:14px;padding:22px}
+.guidance h2{font-size:21px;margin:0 0 14px}
+.guide-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px}
+.guide-item{padding:16px;border:1px solid var(--border);border-radius:11px;background:#fafbfd}
+.guide-item span{display:block;color:var(--muted);font-size:13px;font-weight:700}
+.guide-item b{display:block;font-size:24px;margin:7px 0 5px}
+.guide-item p{margin:0;color:#5b667a;font-size:13px;line-height:1.5}
+.guide-note{margin-top:13px;padding:13px 15px;border-radius:10px;background:#fff6df;color:#674a05;line-height:1.65;font-size:14px}
+@media(max-width:720px){.guide-grid{grid-template-columns:1fr}.chart-card,.guidance{padding:17px}.chart-wrap{min-height:300px}.table{min-width:650px}}
+</style>
 </head>
 <body>
 <main class="page">
@@ -62,8 +94,8 @@ body{background:#f6f8fb;color:var(--ink)}
     <div class="preset-note" id="presetNote"><b>已识别 SOXL：</b>使用 SOXX 对照，每日目标 +3 倍。</div>
     <div class="fields">
       <div class="field"><label for="product">产品</label><input id="product" list="tickers" value="SOXL" autocomplete="off"></div>
-      <div class="field"><label for="benchmark">对照基准</label><input id="benchmark" value="SOXX" autocomplete="off"></div>
-      <div class="field"><label for="leverage">每日倍数</label><input id="leverage" type="number" step="0.5" min="-5" max="5" value="3"></div>
+      <div class="field"><label for="benchmark">自动匹配基准</label><input id="benchmark" value="SOXX" autocomplete="off" readonly></div>
+      <div class="field"><label for="leverage">自动匹配倍数</label><input id="leverage" type="number" step="0.5" min="-5" max="5" value="3" readonly></div>
       <div class="field"><label for="buyDate">买入日期</label><input id="buyDate" type="date" value="2026-06-30"></div>
       <div class="field"><label for="shares">股数</label><input id="shares" type="number" step="1" min="0.0001" value="200"></div>
     </div>
@@ -93,10 +125,20 @@ body{background:#f6f8fb;color:var(--ink)}
   </section>
 
   <section class="card chart-card" id="chartCard" hidden>
-    <h2>从买入日到现在：100元变成多少</h2>
+    <div class="chart-head"><div><h2>买入日至今的收益曲线</h2><p>从买入日的 100 开始，曲线显示真实产品每天涨跌后的累计结果。</p></div></div>
     <div class="legend"><span class="actual">产品真实总回报</span><span class="daily">按基准逐日复利的理论产品</span><span class="simple">基准累计收益 × 倍数</span></div>
     <div class="chart-wrap" id="chartWrap"><svg id="chart" role="img" aria-label="真实产品、每日复利理论和简单倍数收益对比曲线"></svg><div class="tooltip" id="tooltip"></div></div>
     <div class="table-wrap"><table class="table"><thead><tr><th>口径</th><th>累计收益</th><th>期末价值（按实际成本）</th><th>与真实产品差额</th></tr></thead><tbody id="comparisonBody"></tbody></table></div>
+  </section>
+
+  <section class="card guidance" id="guidance" hidden>
+    <h2>持有期间总结</h2>
+    <div class="guide-grid">
+      <article class="guide-item"><span>目前累计结果</span><b id="guideOutcome"></b><p id="guideOutcomeText"></p></article>
+      <article class="guide-item"><span>期间最大回撤</span><b id="guideDrawdown"></b><p>从阶段最高点跌到随后最低点，反映持有过程最难受的幅度。</p></article>
+      <article class="guide-item"><span>期间收益范围</span><b id="guideRange"></b><p id="guideRangeText"></p></article>
+    </div>
+    <div class="guide-note" id="guideNote"></div>
   </section>
 
   <section class="card method" id="method" hidden>
@@ -134,6 +176,37 @@ async function calculate(isRefresh=false){clearError();const product=$('product'
  chartRows=common.out.slice();const last=chartRows[chartRows.length-1];if(Math.abs(pd.currentAdjPrice/last.prodAdj-1)>1e-8||Math.abs(bd.currentAdjPrice/last.benchAdj-1)>1e-8)chartRows.push({date:'现在',actual:100*(1+actual),daily:100*(1+dailyReturn),simple:100*(1+naive)});drawChart(chartRows);const methods=[['产品真实总回报',actual,current,0],['基准逐日倍数复利理论',dailyReturn,cost*(1+dailyReturn),cost*(dailyReturn-actual)],['基准累计收益直接乘倍数',naive,cost*(1+naive),cost*(naive-actual)]];$('comparisonBody').innerHTML=methods.map((x,i)=>`<tr><td>${x[0]}</td><td>${pct(x[1])}</td><td>${money(x[2],pd.currency)}</td><td>${i===0?'—':money(x[3],pd.currency)}</td></tr>`).join('');$('status').textContent=`计算完成 · ${pd.source} · ${new Date().toLocaleTimeString('zh-CN')} 更新${isRefresh?'（自动刷新）':''}`;history.replaceState(null,'',`?ticker=${product}&benchmark=${benchmark}&leverage=${L}&date=${start}&shares=${shares}`);clearInterval(refreshTimer);refreshTimer=setInterval(()=>calculate(true),60000)}catch(e){showError(e.message);$('status').textContent='计算失败，请检查代码、日期或稍后重试'}finally{$('calculate').disabled=false;$('refresh').disabled=false}}
 function drawChart(rows){const svg=$('chart'),wrap=$('chartWrap'),W=Math.max(320,wrap.clientWidth),H=W<600?320:390,M={l:62,r:18,t:18,b:47},iw=W-M.l-M.r,ih=H-M.t-M.b,vals=rows.flatMap(r=>[r.actual,r.daily,r.simple]).filter(Number.isFinite),min=Math.min(...vals),max=Math.max(...vals),pad=Math.max(5,(max-min)*.1),lo=min-pad,hi=max+pad,x=i=>M.l+(rows.length===1?0:i/(rows.length-1))*iw,y=v=>M.t+(hi-v)/(hi-lo)*ih,series=[['actual','var(--blue)'],['daily','var(--orange)'],['simple','var(--purple)']];let html=`<rect x="${M.l}" y="${M.t}" width="${iw}" height="${ih}" fill="#fff" stroke="#cdd9e8"/>`;for(let i=0;i<=5;i++){const v=lo+(hi-lo)*i/5,yy=y(v);html+=`<line x1="${M.l}" y1="${yy}" x2="${W-M.r}" y2="${yy}" stroke="#e4eaf2"/><text x="${M.l-8}" y="${yy+4}" text-anchor="end" fill="#60708a" font-size="12">${v.toFixed(0)}</text>`}const ticks=W<600?3:5;for(let i=0;i<ticks;i++){const idx=Math.round((rows.length-1)*i/(ticks-1)),xx=x(idx);html+=`<text x="${xx}" y="${H-18}" text-anchor="middle" fill="#60708a" font-size="12">${rows[idx].date.slice(5)}</text>`}for(const [key,c] of series){const d=rows.map((r,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(r[key]).toFixed(1)}`).join(' ');html+=`<path d="${d}" fill="none" stroke="${c}" stroke-width="3" stroke-linejoin="round"/>`}html+=`<line id="hoverLine" x1="0" y1="${M.t}" x2="0" y2="${H-M.b}" stroke="#7c8ba1" stroke-dasharray="4 4" visibility="hidden"/><rect id="hit" x="${M.l}" y="${M.t}" width="${iw}" height="${ih}" fill="transparent"/>`;svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=html;const hit=svg.querySelector('#hit'),line=svg.querySelector('#hoverLine'),tip=$('tooltip');hit.onmousemove=e=>{const rect=svg.getBoundingClientRect(),px=(e.clientX-rect.left)*W/rect.width,idx=Math.max(0,Math.min(rows.length-1,Math.round((px-M.l)/iw*(rows.length-1)))),r=rows[idx],xx=x(idx);line.setAttribute('x1',xx);line.setAttribute('x2',xx);line.setAttribute('visibility','visible');tip.innerHTML=`<b>${r.date}</b><br>真实 ${r.actual.toFixed(2)}<br>逐日理论 ${r.daily.toFixed(2)}<br>简单倍数 ${r.simple.toFixed(2)}`;tip.style.display='block';tip.style.left=Math.min(wrap.clientWidth-155,Math.max(5,e.clientX-wrap.getBoundingClientRect().left+12))+'px';tip.style.top=Math.max(5,e.clientY-wrap.getBoundingClientRect().top-75)+'px'};hit.onmouseleave=()=>{line.setAttribute('visibility','hidden');tip.style.display='none'}}
 function init(){const q=new URLSearchParams(location.search);if(q.has('ticker'))$('product').value=q.get('ticker');if(q.has('benchmark'))$('benchmark').value=q.get('benchmark');if(q.has('leverage'))$('leverage').value=q.get('leverage');if(q.has('date'))$('buyDate').value=q.get('date');if(q.has('shares'))$('shares').value=q.get('shares');setPreset();$('product').addEventListener('input',setPreset);$('product').addEventListener('change',setPreset);$('calculate').onclick=()=>calculate(false);$('refresh').onclick=()=>calculate(false);window.addEventListener('resize',()=>{if(chartRows.length)drawChart(chartRows)});calculate(false)}init();
+</script>
+<script>
+function syncAutomaticFields(){
+  const known=Boolean(presets[$('product').value.trim().toUpperCase()]);
+  $('benchmark').readOnly=known;
+  $('leverage').readOnly=known;
+  $('benchmark').setAttribute('aria-readonly',String(known));
+  $('leverage').setAttribute('aria-readonly',String(known));
+}
+function renderHoldingGuide(rows){
+  if(!rows||!rows.length)return;
+  const values=rows.map(r=>r.actual).filter(Number.isFinite);
+  let peak=values[0],maxDrawdown=0;
+  for(const value of values){peak=Math.max(peak,value);maxDrawdown=Math.min(maxDrawdown,value/peak-1)}
+  let minIndex=0,maxIndex=0;
+  values.forEach((value,index)=>{if(value<values[minIndex])minIndex=index;if(value>values[maxIndex])maxIndex=index});
+  const finalReturn=values[values.length-1]/100-1;
+  $('guidance').hidden=false;
+  $('guideOutcome').textContent=pct(finalReturn);color($('guideOutcome'),finalReturn);
+  $('guideOutcomeText').textContent=`约 ${rows.length} 个共同交易日，100 变为 ${values[values.length-1].toFixed(2)}。`;
+  $('guideDrawdown').textContent=pct(maxDrawdown);color($('guideDrawdown'),maxDrawdown);
+  $('guideRange').textContent=`${pct(values[minIndex]/100-1)} ～ ${pct(values[maxIndex]/100-1)}`;
+  $('guideRangeText').textContent=`最低出现在 ${rows[minIndex].date}，最高出现在 ${rows[maxIndex].date}。`;
+  const severity=maxDrawdown<=-.3?'回撤非常大':maxDrawdown<=-.2?'回撤明显':maxDrawdown<=-.1?'波动较大':'波动相对有限';
+  $('guideNote').innerHTML=`<b>${severity}：</b>这条曲线展示的是实际产品从买入日至今的价格收益路径。杠杆产品每天重置，连续震荡会拖累长期结果；单边趋势中也可能出现正向复利。最大回撤与最终盈亏是两件事，都需要同时看。`;
+}
+const originalDrawChart=drawChart;
+drawChart=function(rows){originalDrawChart(rows);renderHoldingGuide(rows)};
+$('product').addEventListener('input',syncAutomaticFields);
+$('product').addEventListener('change',syncAutomaticFields);
+syncAutomaticFields();
 </script>
 </body>
 </html>
