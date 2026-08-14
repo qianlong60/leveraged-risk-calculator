@@ -164,7 +164,7 @@ const money=(v,c='USD')=>new Intl.NumberFormat('zh-CN',{style:'currency',currenc
 const pct=v=>`${v>=0?'+':''}${(v*100).toFixed(2)}%`;
 const color=(el,v)=>{el.classList.remove('positive','negative','neutral');el.classList.add(v>1e-8?'positive':v<-1e-8?'negative':'neutral')};
 function gapWords(v){if(v<-.1)return'差额很大';if(v<-.05)return'差额明显';if(v<-.02)return'已有差额';if(v<0)return'轻微差额';if(v>.02)return'出现正向复利增益';return'基本接近'}
-function setPreset(){const s=$('product').value.trim().toUpperCase();$('product').value=s;const p=presets[s];if(p){$('benchmark').value=p[0];$('leverage').value=p[1];$('presetNote').innerHTML=`<b>已识别 ${s}：</b>${p[0]} 对照 · 每日 ${p[1]>0?'+':''}${p[1]} 倍。`}else{$('presetNote').innerHTML='<b>没有自动匹配：</b>请确认对照基准和每日倍数。普通股票填写 1 倍。'}}
+function setPreset(){const s=$('product').value.trim().toUpperCase();$('product').value=s;const p=presets[s];if(p){$('benchmark').value=p[0];$('leverage').value=p[1];$('presetNote').innerHTML=`<b>已识别 ${s}：</b>${p[0]} 对照 · 每日 ${p[1]>0?'+':''}${p[1]} 倍。`}else if(s){$('benchmark').value=s;$('leverage').value=1;$('presetNote').innerHTML=`<b>按普通股票处理 ${s}：</b>基准自动设为 ${s}，倍数自动设为 1。普通股票没有每日杠杆重置磨损。`}else{$('benchmark').value='';$('leverage').value=1;$('presetNote').innerHTML='<b>请输入产品代码：</b>页面会自动匹配基准和倍数。'}}
 function showError(msg){$('error').textContent=msg;$('error').style.display='block'}function clearError(){$('error').style.display='none'}
 async function loadSymbol(symbol,start){const r=await fetch(`/api/market?symbol=${encodeURIComponent(symbol)}&start=${encodeURIComponent(start)}`,{cache:'no-store'});const j=await r.json();if(!r.ok)throw new Error(j.error||`无法读取 ${symbol}`);return j}
 function firstOnOrAfter(rows,date){return rows.find(r=>r.date>=date)}
@@ -179,11 +179,10 @@ function init(){const q=new URLSearchParams(location.search);if(q.has('ticker'))
 </script>
 <script>
 function syncAutomaticFields(){
-  const known=Boolean(presets[$('product').value.trim().toUpperCase()]);
-  $('benchmark').readOnly=known;
-  $('leverage').readOnly=known;
-  $('benchmark').setAttribute('aria-readonly',String(known));
-  $('leverage').setAttribute('aria-readonly',String(known));
+  $('benchmark').readOnly=true;
+  $('leverage').readOnly=true;
+  $('benchmark').setAttribute('aria-readonly','true');
+  $('leverage').setAttribute('aria-readonly','true');
 }
 function renderHoldingGuide(rows){
   if(!rows||!rows.length)return;
