@@ -3,28 +3,72 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>真实行情杠杆磨损追踪器</title>
-<meta name="description" content="输入杠杆ETF代码、买入日期和股数，使用真实行情分解实际收益、每日重置路径效应和跟踪偏差。">
+<title>杠杆 ETF 持有结果</title>
+<meta name="description" content="输入杠杆 ETF、买入日期和股数，直接查看实际盈亏与长期持有差额。">
 <style>
 :root{--navy:#13244a;--blue:#2463eb;--red:#d92d20;--green:#078a55;--orange:#dc7100;--purple:#7655d4;--line:#d9e3f0;--muted:#60708a;--bg:#f3f7fc}*{box-sizing:border-box}html,body{max-width:100%;overflow-x:hidden}body{margin:0;background:var(--bg);color:var(--navy);font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif}.page{width:100%;max-width:1180px;margin:auto;padding:24px 18px 50px}.nav{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-bottom:20px}.nav a{padding:9px 13px;border:1px solid #bdcbe0;border-radius:999px;background:#fff;color:var(--navy);text-decoration:none;font-weight:800}.nav a.active{background:var(--navy);color:#fff}.hero{text-align:center;margin:22px auto 20px}.hero h1{font-size:36px;margin:0 0 10px}.hero p{font-size:17px;color:var(--muted);line-height:1.7;margin:0}.card{background:#fff;border:1px solid var(--line);border-radius:17px;box-shadow:0 7px 28px rgba(25,50,90,.07)}.setup{padding:23px}.preset-note{padding:12px 15px;background:#eef5ff;border-left:5px solid var(--blue);border-radius:8px;line-height:1.65;margin-bottom:18px}.fields{display:grid;grid-template-columns:1.05fr 1.05fr .75fr .95fr .75fr;gap:13px;align-items:end}.field{min-width:0}.field label{display:block;font-size:14px;font-weight:800;margin:0 0 7px}.field input{width:100%;min-width:0;border:1.5px solid #bfccdf;border-radius:10px;padding:11px 12px;font-size:18px;font-weight:750;color:var(--navy);background:#fff;text-transform:uppercase}.field input[type=date]{text-transform:none}.actions{display:flex;gap:9px;align-items:center;margin-top:16px;flex-wrap:wrap}.primary,.secondary{border:0;border-radius:10px;padding:11px 17px;font-size:16px;font-weight:800;cursor:pointer}.primary{background:var(--blue);color:#fff}.secondary{background:#eaf0f8;color:var(--navy)}button:disabled{opacity:.55;cursor:wait}.status{color:var(--muted);font-size:14px;line-height:1.5}.error{display:none;margin-top:15px;padding:13px 15px;background:#fff0f0;border:1px solid #f2a8a8;border-radius:10px;color:#a71919;font-weight:700}.headline{margin-top:18px;padding:22px}.headline-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}.instrument h2{margin:0 0 5px;font-size:25px}.instrument p{margin:0;color:var(--muted);line-height:1.55}.live{text-align:right}.live b{display:block;font-size:31px;color:var(--blue)}.live span{font-size:13px;color:var(--muted)}.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-top:18px}.metric{min-width:0;padding:18px}.metric .label{color:var(--muted);font-size:14px;line-height:1.45}.metric .value{font-size:29px;font-weight:850;margin:7px 0 4px;overflow-wrap:anywhere}.metric .sub{font-size:13px;line-height:1.5;color:var(--muted)}.positive{color:var(--green)!important}.negative{color:var(--red)!important}.neutral{color:var(--orange)!important}.breakdown{margin-top:18px;padding:23px}.breakdown h2,.chart-card h2,.method h2{font-size:23px;margin:0 0 8px}.breakdown-intro{color:var(--muted);line-height:1.65;margin:0 0 18px}.decomp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.piece{border-top:5px solid var(--line);padding:17px;background:#f8fafc;border-radius:11px;min-width:0}.piece.path{border-color:var(--orange)}.piece.track{border-color:var(--purple)}.piece.total{border-color:var(--red)}.piece h3{font-size:17px;margin:0 0 7px}.piece .big{font-size:31px;font-weight:850;margin:4px 0}.piece p{font-size:13px;color:var(--muted);line-height:1.55;margin:5px 0 0}.equation{margin-top:16px;padding:13px 15px;background:#edf5ff;border-radius:9px;line-height:1.7;font-size:15px}.chart-card{margin-top:18px;padding:23px}.legend{display:flex;gap:16px;flex-wrap:wrap;margin:12px 0;font-size:14px}.legend span::before{content:"";display:inline-block;width:23px;height:4px;border-radius:2px;margin-right:7px;vertical-align:middle}.legend .actual::before{background:var(--blue)}.legend .daily::before{background:var(--orange)}.legend .simple::before{background:var(--purple)}.chart-wrap{width:100%;min-height:390px;position:relative}.chart-wrap svg{display:block;width:100%;height:auto}.tooltip{position:absolute;display:none;pointer-events:none;background:#13244a;color:#fff;padding:8px 10px;border-radius:7px;font-size:12px;line-height:1.5;z-index:3;white-space:nowrap}.table-wrap{overflow-x:auto;margin-top:15px}.table{width:100%;border-collapse:collapse;font-size:14px}.table th,.table td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:right}.table th:first-child,.table td:first-child{text-align:left}.method{margin-top:18px;padding:23px;line-height:1.7}.method ul{padding-left:21px}.method .warning{background:#fff6df;border:1px solid #eab308;border-radius:10px;padding:13px 15px}.sources{font-size:13px;color:var(--muted);margin-top:15px;line-height:1.65}.sources a{color:#1d5fc1}@media(max-width:900px){.fields{grid-template-columns:1fr 1fr 1fr}.summary{grid-template-columns:1fr 1fr}.decomp{grid-template-columns:1fr}.chart-wrap{min-height:330px}}@media(max-width:620px){.page{padding:15px 11px 35px}.hero h1{font-size:27px}.fields{grid-template-columns:1fr 1fr}.field.wide{grid-column:1/-1}.summary{grid-template-columns:1fr}.headline,.setup,.breakdown,.chart-card,.method{padding:18px 14px}.live{text-align:left}.chart-wrap{min-height:285px}.metric .value{font-size:27px}}@media(max-width:390px){.fields{grid-template-columns:1fr}.field.wide{grid-column:auto}}
+</style>
+<style>
+:root{--ink:#172033;--muted2:#68738a;--soft:#f5f7fb;--border:#dfe4ed;--accent:#1769e0;--loss:#c7362f;--gain:#087c52}
+body{background:#f6f8fb;color:var(--ink)}
+.page{max-width:960px;padding:18px 18px 56px}
+.nav{justify-content:flex-start;margin-bottom:28px;gap:7px}
+.nav a{font-size:13px;padding:7px 11px;border-color:#d9dee8;box-shadow:none}
+.hero{text-align:left;margin:0 0 20px}
+.hero h1{font-size:34px;letter-spacing:-.03em;margin-bottom:6px}
+.hero p{font-size:16px;line-height:1.55;max-width:720px}
+.card{border-color:var(--border);border-radius:14px;box-shadow:0 5px 20px rgba(30,44,70,.05)}
+.setup{padding:20px}
+.preset-note{margin-bottom:16px;padding:10px 12px;border-left-width:4px;font-size:14px;background:#edf4ff}
+.fields{grid-template-columns:1fr 1fr .65fr 1fr .7fr;gap:10px}
+.field label{font-size:13px;color:#4e5a70;margin-bottom:6px}
+.field input{font-size:16px;padding:10px 11px;border-radius:8px}
+.actions{margin-top:14px}
+.primary{background:var(--accent);min-width:160px}
+.secondary{padding:11px 13px}
+.status{font-size:13px}
+.headline{margin-top:14px;padding:20px}
+.headline-top{align-items:center;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.instrument h2{font-size:20px;margin-bottom:4px}
+.instrument p{font-size:13px}
+.live b{font-size:25px;color:var(--ink)}
+.summary{grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.summary .metric:nth-child(1),.summary .metric:nth-child(2){display:block;order:2;padding:13px 15px;background:#fff;border:1px solid var(--border)}
+.summary .metric:nth-child(1) .value,.summary .metric:nth-child(2) .value{font-size:22px;margin:4px 0}
+.summary .metric:nth-child(3),.summary .metric:nth-child(4){order:1}
+.metric{padding:22px;border:0;border-radius:12px;box-shadow:none;background:var(--soft)}
+.metric:nth-child(3){background:#f8eeee}
+.metric:nth-child(4){background:#fff7e8}
+.metric .label{font-size:14px;font-weight:800;color:#465168}
+.metric .value{font-size:38px;letter-spacing:-.035em;margin:7px 0}
+.metric .sub{font-size:14px;color:#566176}
+.breakdown{display:block;margin-top:12px;padding:18px 20px;background:#fff}
+.breakdown h2{font-size:17px;margin-bottom:8px}
+.breakdown-intro{font-size:15px;margin:0;color:#33405a}
+.decomp{display:none}
+.equation{display:none}
+.chart-card,.method{display:none!important}
+.negative{color:var(--loss)!important}.positive{color:var(--gain)!important}
+@media(max-width:760px){.fields{grid-template-columns:1fr 1fr}.field.wide{grid-column:auto}.summary{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.page{padding:12px 11px 36px}.nav{margin-bottom:22px}.hero h1{font-size:27px}.hero p{font-size:14px}.setup,.headline,.breakdown{padding:16px}.fields{grid-template-columns:1fr 1fr}.field:first-child,.field:nth-child(4){grid-column:1/-1}.actions{align-items:stretch}.primary{width:100%}.secondary{flex:0 0 auto}.status{flex:1}.summary{grid-template-columns:1fr}.metric .value{font-size:34px}.headline-top{align-items:flex-start}.live{text-align:left}}
 </style>
 </head>
 <body>
 <main class="page">
   <nav class="nav"><a href="index.html">首页</a><a href="leveraged_long_calculator.html">两倍做多</a><a href="inverse_etf_calculator.html">两倍做空</a><a class="active" href="leverage_decay_tracker.html">真实持仓磨损</a></nav>
-  <header class="hero"><h1>真实行情杠杆持仓磨损追踪器</h1><p>输入产品代码、买入日期和股数，实时估算持有到现在的真实盈亏，并把长期偏差拆成每日重置路径效应与跟踪偏差。</p></header>
+  <header class="hero"><h1>杠杆 ETF 持有结果</h1><p>输入买入信息，直接看实际盈亏，以及相比“基准涨跌 × 杠杆倍数”少了或多了多少。</p></header>
 
   <section class="card setup">
-    <div class="preset-note" id="presetNote"><b>SOXL 示例：</b>自动使用 SOXX 作为同指数基准，杠杆倍数 +3。你写的“6/31”不是有效日期（6月只有30天），示例默认采用 2026-06-30 收盘买入200股。</div>
+    <div class="preset-note" id="presetNote"><b>已识别 SOXL：</b>使用 SOXX 对照，每日目标 +3 倍。</div>
     <div class="fields">
-      <div class="field"><label for="product">杠杆产品代码</label><input id="product" list="tickers" value="SOXL" autocomplete="off"></div>
-      <div class="field"><label for="benchmark">基准/正股代码</label><input id="benchmark" value="SOXX" autocomplete="off"></div>
-      <div class="field"><label for="leverage">每日目标倍数</label><input id="leverage" type="number" step="0.5" min="-5" max="5" value="3"></div>
+      <div class="field"><label for="product">产品</label><input id="product" list="tickers" value="SOXL" autocomplete="off"></div>
+      <div class="field"><label for="benchmark">对照基准</label><input id="benchmark" value="SOXX" autocomplete="off"></div>
+      <div class="field"><label for="leverage">每日倍数</label><input id="leverage" type="number" step="0.5" min="-5" max="5" value="3"></div>
       <div class="field"><label for="buyDate">买入日期</label><input id="buyDate" type="date" value="2026-06-30"></div>
-      <div class="field"><label for="shares">买入股数</label><input id="shares" type="number" step="1" min="0.0001" value="200"></div>
+      <div class="field"><label for="shares">股数</label><input id="shares" type="number" step="1" min="0.0001" value="200"></div>
     </div>
     <datalist id="tickers"><option>SOXL</option><option>SOXS</option><option>TQQQ</option><option>SQQQ</option><option>UPRO</option><option>SPXU</option><option>QLD</option><option>QID</option><option>TECL</option><option>TECS</option><option>FAS</option><option>FAZ</option><option>TNA</option><option>TZA</option><option>TMF</option><option>TMV</option><option>NVDL</option><option>TSLL</option></datalist>
-    <div class="actions"><button class="primary" id="calculate">读取真实行情并计算</button><button class="secondary" id="refresh">刷新现价</button><span class="status" id="status">行情约每60秒更新；历史价格使用拆股调整后的收盘价。</span></div>
+    <div class="actions"><button class="primary" id="calculate">计算持有结果</button><button class="secondary" id="refresh">刷新</button><span class="status" id="status">每60秒自动更新行情</span></div>
     <div class="error" id="error"></div>
   </section>
 
@@ -33,13 +77,13 @@
     <div class="summary">
       <article class="card metric"><div class="label">估算投入成本</div><div class="value" id="cost"></div><div class="sub" id="costSub"></div></article>
       <article class="card metric"><div class="label">当前持仓市值估算</div><div class="value" id="currentValue"></div><div class="sub">价格收益口径；不含另存账户的现金分红</div></article>
-      <article class="card metric"><div class="label">真实持仓盈亏</div><div class="value" id="pnl"></div><div class="sub" id="actualReturn"></div></article>
-      <article class="card metric"><div class="label">相对“基准累计涨跌×倍数”的总偏差</div><div class="value" id="totalGap"></div><div class="sub" id="totalGapMoney"></div></article>
+      <article class="card metric"><div class="label">你现在实际赚 / 亏</div><div class="value" id="pnl"></div><div class="sub" id="actualReturn"></div></article>
+      <article class="card metric"><div class="label">相比“基准涨跌 × 倍数”的差额</div><div class="value" id="totalGap"></div><div class="sub" id="totalGapMoney"></div></article>
     </div>
   </section>
 
   <section class="card breakdown" id="breakdown" hidden>
-    <h2>磨损不是一个数：必须拆成两部分</h2><p class="breakdown-intro" id="periodText"></p>
+    <h2>一句话看懂</h2><p class="breakdown-intro" id="periodText"></p>
     <div class="decomp">
       <article class="piece path"><h3>① 每日重置路径效应</h3><div class="big" id="pathEffect"></div><p id="pathMoney"></p><p>每日复利理论收益 − 简单倍数收益。震荡时常为负；单边趋势中也可能为正，此时是复利增益，不应叫磨损。</p></article>
       <article class="piece track"><h3>② 跟踪、费用及基准代理偏差</h3><div class="big" id="trackingGap"></div><p id="trackingMoney"></p><p>产品真实收益 − 基准每日倍数复利理论收益。包含费用、融资、跟踪误差、折溢价以及代理基准差异。</p></article>
@@ -77,7 +121,8 @@ let lastArgs=null,refreshTimer=null,chartRows=[];
 const money=(v,c='USD')=>new Intl.NumberFormat('zh-CN',{style:'currency',currency:c,maximumFractionDigits:2}).format(v);
 const pct=v=>`${v>=0?'+':''}${(v*100).toFixed(2)}%`;
 const color=(el,v)=>{el.classList.remove('positive','negative','neutral');el.classList.add(v>1e-8?'positive':v<-1e-8?'negative':'neutral')};
-function setPreset(){const s=$('product').value.trim().toUpperCase();$('product').value=s;const p=presets[s];if(p){$('benchmark').value=p[0];$('leverage').value=p[1];$('presetNote').innerHTML=`<b>已自动识别 ${s}：</b>${p[2]}。你仍可手动修改基准代码和倍数。`}else{$('presetNote').innerHTML='<b>未找到自动预设：</b>请填写该杠杆产品真正跟踪的基准代码和每日目标倍数。普通股票没有“每日杠杆重置磨损”，倍数应填1。'}}
+function gapWords(v){if(v<-.1)return'差额很大';if(v<-.05)return'差额明显';if(v<-.02)return'已有差额';if(v<0)return'轻微差额';if(v>.02)return'出现正向复利增益';return'基本接近'}
+function setPreset(){const s=$('product').value.trim().toUpperCase();$('product').value=s;const p=presets[s];if(p){$('benchmark').value=p[0];$('leverage').value=p[1];$('presetNote').innerHTML=`<b>已识别 ${s}：</b>${p[0]} 对照 · 每日 ${p[1]>0?'+':''}${p[1]} 倍。`}else{$('presetNote').innerHTML='<b>没有自动匹配：</b>请确认对照基准和每日倍数。普通股票填写 1 倍。'}}
 function showError(msg){$('error').textContent=msg;$('error').style.display='block'}function clearError(){$('error').style.display='none'}
 async function loadSymbol(symbol,start){const r=await fetch(`/api/market?symbol=${encodeURIComponent(symbol)}&start=${encodeURIComponent(start)}`,{cache:'no-store'});const j=await r.json();if(!r.ok)throw new Error(j.error||`无法读取 ${symbol}`);return j}
 function firstOnOrAfter(rows,date){return rows.find(r=>r.date>=date)}
@@ -92,3 +137,4 @@ function init(){const q=new URLSearchParams(location.search);if(q.has('ticker'))
 </script>
 </body>
 </html>
+
