@@ -5,6 +5,8 @@
 - `index.html`：主页
 - `leveraged_long_calculator.html`：两倍做多回本与波动磨损
 - `inverse_etf_calculator.html`：两倍做空回本与波动磨损
+- `leverage_decay_tracker.html`：基于真实行情的杠杆持仓磨损分解
+- `api/market.js`：Nasdaq 历史与当前行情代理接口
 
 无需构建命令，可直接由 Vercel 以静态站点部署。
 
